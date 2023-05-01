@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
-using System.Xml.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System;
 
 namespace SearchEngine
 {
@@ -100,12 +100,16 @@ namespace SearchEngine
     }
 
     public static class H1Fag2
+
     {
         public static List<Fag> AlleFag { get; set; }
 
         static H1Fag2()
         {
             var lærer1 = new H1Lærer("Niels", "Olesen");
+            var lærer2 = new H1Lærer("Flemming", "Sørensen");
+            var lærer3 = new H1Lærer("Peter", "Suni Lindeskov");
+            var lærer4 = new H1Lærer("Henrik", "Vincents Poulsen");
 
             var elev1 = new H1Elev("Alexander", "Mathias Thamdru");
             var elev2 = new H1Elev("Allan", "Gawron");
@@ -124,7 +128,7 @@ namespace SearchEngine
             var elev15 = new H1Elev("Thomas", "Mose Holmberg");
             var elev16 = new H1Elev("Tobias", "Casanas Besser");
 
-            var fag1 = new H1Fag("Matematik", lærer1, new List<Elev> { elev1, elev2 });
+            var fag1 = new H1Fag("Grundlæggende Programmering", lærer1, new List<Elev> { elev1, elev2, elev3, elev4, elev5, elev6, elev7, elev8, elev9, elev10, elev11, elev12, elev13, elev14, elev15, elev15, elev16 });
 
 
             AlleFag = new List<Fag> { fag1 };
@@ -138,12 +142,12 @@ namespace SearchEngine
         {
             while (true)
             {
-                Console.WriteLine("Indtast søgekriterier (Lærer, elev eller emne):");
-                string kriterierString = Console.ReadLine();
+                Console.WriteLine("Indtast søgekriterier (Lærer, elev eller fag):");
+                string criteriaString = Console.ReadLine();
 
-                if (Enum.TryParse<SøgeKriterier>(kriterierString, out var kriteria))
+                if (Enum.TryParse<SøgeKriterier>(criteriaString, out var Kriterier))
                 {
-                    switch (kriteria)
+                    switch (Kriterier)
                     {
                         case SøgeKriterier.Lærer:
                             Console.WriteLine("Indtast lærerens navn:");
@@ -153,42 +157,39 @@ namespace SearchEngine
                             Console.WriteLine($"Fag undervist af {lærerNavn}:");
                             foreach (var fag in matchingTeachers.SelectMany(t => t.GetSubjectsTaught()))
                             {
-                                Console.WriteLine($"- {fag.Navn}");
+                                Console.WriteLine(fag.Navn);
                             }
                             break;
+
                         case SøgeKriterier.Elev:
-                            Console.WriteLine("Enter student name:");
+                            Console.WriteLine("Indtast den studerendes navn:");
                             string elevNavn = Console.ReadLine();
                             var matchingStudents = H1Fag2.AlleFag.SelectMany(s => s.Elever)
-                                .Where(s => s.ForNavn.Equals(elevNavn, StringComparison.OrdinalIgnoreCase));
-                            Console.WriteLine($"Subjects enrolled by {elevNavn}:");
+                                .Where(p => p.ForNavn.Equals(elevNavn, StringComparison.OrdinalIgnoreCase));
+                            Console.WriteLine($"Fag indskrevet af {elevNavn}:");
                             foreach (var fag in matchingStudents.SelectMany(s => s.GetSubjectsEnrolled()))
                             {
-                                Console.WriteLine($"- {fag.Navn}");
+                                Console.WriteLine(fag.Navn);
                             }
                             break;
+
                         case SøgeKriterier.Fag:
-
-                            Console.WriteLine("Enter subject name:");
+                            Console.WriteLine("Indtast emnets navn:");
                             string fagNavn = Console.ReadLine();
-
                             var matchingSubjects = H1Fag2.AlleFag
                                 .Where(s => s.Navn.Equals(fagNavn, StringComparison.OrdinalIgnoreCase));
-                            Console.WriteLine($"Subject {fagNavn} taught by {matchingSubjects.First().Lærer.ForNavn}:");
-
-                            foreach (var elev in matchingSubjects.First().Elever)
+                            Console.WriteLine($"{fagNavn} er undervist af:");
+                            foreach (var lærer in matchingSubjects.Select(s => s.Lærer))
                             {
-                                Console.WriteLine($"- {elev.ForNavn} {elev.EfterNavn}");
+                                Console.WriteLine($"{lærer.ForNavn} {lærer.EfterNavn}");
+                            }
+                            Console.WriteLine($"{fagNavn} er indskrevet af:");
+                            foreach (var elev in matchingSubjects.SelectMany(s => s.Elever))
+                            {
+                                Console.WriteLine($"{elev.ForNavn} {elev.EfterNavn}");
                             }
                             break;
-                        default:
-                            Console.WriteLine("Invalid search criteria entered.");
-                            break;
                     }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid search criteria entered.");
                 }
             }
         }
