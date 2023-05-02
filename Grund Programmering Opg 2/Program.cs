@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-using System;
 
 namespace SearchEngine
 {
@@ -178,12 +178,12 @@ namespace SearchEngine
                             string fagNavn = Console.ReadLine();
                             var matchingSubjects = H1Fag2.AlleFag
                                 .Where(s => s.Navn.Equals(fagNavn, StringComparison.OrdinalIgnoreCase));
-                            Console.WriteLine($"{fagNavn} er undervist af:");
+                            Console.WriteLine($"Emne {fagNavn} er undervist af:");
                             foreach (var lærer in matchingSubjects.Select(s => s.Lærer))
                             {
                                 Console.WriteLine($"{lærer.ForNavn} {lærer.EfterNavn}");
                             }
-                            Console.WriteLine($"{fagNavn} er indskrevet af:");
+                            Console.WriteLine($"Fag {fagNavn} er indskrevet af:");
                             foreach (var elev in matchingSubjects.SelectMany(s => s.Elever))
                             {
                                 Console.WriteLine($"{elev.ForNavn} {elev.EfterNavn}");
